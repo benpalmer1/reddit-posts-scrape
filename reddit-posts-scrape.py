@@ -8,20 +8,20 @@ TIME_WINDOW = 60  # Time window in seconds
 
 def get_posts(subreddit, keywords=None, limit=1000, rate_limit=RATE_LIMIT):
     url = f"https://www.reddit.com/r/{subreddit}/new.json" if not keywords else f"https://www.reddit.com/r/{subreddit}/search.json?q={keywords}&restrict_sr=1"
-    headers = {'User-Agent': 'my-app'} # ideally replace this
+    headers = {'User-Agent': 'my-app'}
     posts = []
     after = None
     requests_made = 0
-    start_time = time.time()
+    start_time = t.time()
     
     while len(posts) < limit:
         if requests_made >= rate_limit:
-            end_time = time.time()
+            end_time = t.time()
             elapsed_time = end_time - start_time
             if elapsed_time < TIME_WINDOW:
                 sleep_time = TIME_WINDOW - elapsed_time
-                time.sleep(sleep_time)
-            start_time = time.time()
+                t.sleep(sleep_time)
+            start_time = t.time()
             requests_made = 0
 
         params = {'limit': 100}
@@ -39,6 +39,15 @@ def get_posts(subreddit, keywords=None, limit=1000, rate_limit=RATE_LIMIT):
         posts.extend(posts_data)
         
         for post in posts_data:
+            if requests_made >= rate_limit:
+                end_time = t.time()
+                elapsed_time = end_time - start_time
+                if elapsed_time < TIME_WINDOW:
+                    sleep_time = TIME_WINDOW - elapsed_time
+                    t.sleep(sleep_time)
+                start_time = t.time()
+                requests_made = 0
+
             post_id = post['data']['id']
             comments_url = f"https://www.reddit.com/r/{subreddit}/comments/{post_id}.json"
             comments_response = requests.get(comments_url, headers=headers)
