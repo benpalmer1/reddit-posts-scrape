@@ -81,8 +81,8 @@ def write_csv(posts, subreddit):
                 writer.writerow([post_id, comment['data']['id'], comment['data']['body'], date])
 
 if __name__ == "__main__":
-    subreddit = "ForeverAlone"
-    keywords = "Autism"
+    subreddit = "SubredditName"
+    keywords = "Keyword/sToSearch"
     limit = 1000 #number of posts
     posts = get_posts(subreddit, keywords, limit)
     
