@@ -2,8 +2,9 @@ import requests
 import json
 import csv
 from datetime import datetime
+import time
 
-RATE_LIMIT = 60  # Maximum requests per minute - max for free tier, might need to drop this down to 30 if this doesn't work
+RATE_LIMIT = 60  # Maximum requests per minute
 TIME_WINDOW = 60  # Time window in seconds
 
 def get_posts(subreddit, keywords=None, limit=1000, rate_limit=RATE_LIMIT):
@@ -12,16 +13,16 @@ def get_posts(subreddit, keywords=None, limit=1000, rate_limit=RATE_LIMIT):
     posts = []
     after = None
     requests_made = 0
-    start_time = t.time()
+    start_time = time.time()
     
     while len(posts) < limit:
         if requests_made >= rate_limit:
-            end_time = t.time()
+            end_time = time.time()
             elapsed_time = end_time - start_time
             if elapsed_time < TIME_WINDOW:
                 sleep_time = TIME_WINDOW - elapsed_time
-                t.sleep(sleep_time)
-            start_time = t.time()
+                time.sleep(sleep_time)
+            start_time = time.time()
             requests_made = 0
 
         params = {'limit': 100}
@@ -40,12 +41,12 @@ def get_posts(subreddit, keywords=None, limit=1000, rate_limit=RATE_LIMIT):
         
         for post in posts_data:
             if requests_made >= rate_limit:
-                end_time = t.time()
+                end_time = time.time()
                 elapsed_time = end_time - start_time
                 if elapsed_time < TIME_WINDOW:
                     sleep_time = TIME_WINDOW - elapsed_time
-                    t.sleep(sleep_time)
-                start_time = t.time()
+                    time.sleep(sleep_time)
+                start_time = time.time()
                 requests_made = 0
 
             post_id = post['data']['id']
@@ -80,8 +81,8 @@ def write_csv(posts, subreddit):
                 writer.writerow([post_id, comment['data']['id'], comment['data']['body'], date])
 
 if __name__ == "__main__":
-    subreddit = "SubredditName"
-    keywords = "SearchKeyword"
+    subreddit = "ForeverAlone"
+    keywords = "Autism"
     limit = 1000 #number of posts
     posts = get_posts(subreddit, keywords, limit)
     
